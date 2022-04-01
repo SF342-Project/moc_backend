@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
 
+const ProductFavorite = new mongoose.Schema({
+    id: String
+}, { _id : false })
+
+const ShopFavorite = new mongoose.Schema({
+    id: Number
+}, { _id : false })
+
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -24,6 +32,8 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    product_lists: [],
+    shop_lists: []
 })
 
 module.exports = mongoose.model('User', UserSchema)
