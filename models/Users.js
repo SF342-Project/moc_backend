@@ -1,13 +1,5 @@
 const mongoose = require('mongoose')
 
-const ProductFavorite = new mongoose.Schema({
-    id: String
-}, { _id : false })
-
-const ShopFavorite = new mongoose.Schema({
-    id: Number
-}, { _id : false })
-
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
