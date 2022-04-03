@@ -9,7 +9,7 @@ function reqDateFormat(dt){
     const year = d.getFullYear();
     const month = d.getMonth()+1;
     const date = d.getDate();
-    var localTime = year + '-' + month.toString().padStart(2, '0') + '-' + date
+    var localTime = year + '-' + month.toString().padStart(2, '0') + '-' + date.toString().padStart(2, '0')
     // return localTime + "T00:00:00";
     return localTime;
 }
@@ -18,6 +18,19 @@ function dbDateFormat(localTime){
     return localTime + "T00:00:00";
 }
 
+
+function lastDateFormat(dt){
+    const d = new Date(dt)
+    const year = d.getFullYear();
+    const month = d.getMonth()+1;
+    const date = d.getDate();
+    const h = d.getHours().toString();
+    const m = d.getMinutes().toString();
+    const s = d.getSeconds().toString();
+    var localTime = year + '-' + month.toString().padStart(2, '0') + '-' + date.toString().padStart(2, '0') + 'T' + h.padStart(2, '0')  + ":"+ m.padStart(2, '0')  + ":"+ s.padStart(2, '0')  
+    // return localTime + "T00:00:00";
+    return localTime;
+}
 
 function subDays(date, days){
     const result = new Date();
@@ -42,20 +55,21 @@ router.get('/now/:id',async (req,res) =>{
     var before = subDays(now,15)
     var before_formatted = reqDateFormat(before)
     
-    var now_formatted_db = dbDateFormat(now_formatted)
 
     var _latest = await Last.findOne({'id':req.params.id},{},{'date':-1})
+    
     if (_latest === null){
         var newLast = new Last({
             'id':req.params.id,
-            'date':dbDateFormat(now_formatted)
+            'date':lastDateFormat(now)
         })
         await newLast.save()
 
     }
     var latest = await Last.findOne({'id':req.params.id},{},{'date':-1})
     var lastd = new Date(latest.date)
-    var dif_date = Math.round((now.getTime() - lastd.getTime()) / (1000 * 60 * 60 * 24))
+    var dif_date = Math.round((now.getTime() - lastd.getTime()) / (1000 * 60 * 60 * 4))
+    
     if (dif_date > 0 || _latest === null){
         var product_detail = await getProductPrices(req.params.id,before_formatted,now_formatted)
         for(var i = 0; i< product_detail.length; i++){
@@ -74,15 +88,11 @@ router.get('/now/:id',async (req,res) =>{
                 await newPrices.save()
             }
         }
-        
-        var latestData = await Price.findOne({'id':req.params.id}, {}, { sort: { 'date' : -1 } });
-        res.send(latestData)
-        
+            
     }
-    else{
-        var latestData = await Price.findOne({'id':req.params.id}, {}, { sort: { 'date' : -1 } });
-        res.send(latestData)
-    }
+    
+    var latestData = await Price.findOne({'id':req.params.id}, {}, { sort: { 'date' : -1 } });
+    res.send(latestData)
     
 })
 
