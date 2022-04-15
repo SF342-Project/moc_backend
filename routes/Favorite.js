@@ -17,7 +17,7 @@ router.post("/product", async (req, res) => {
   }
 });
 
-router.get("/product", async (req, res) => {
+router.post("/getProduct", async (req, res) => {
     const user = await User.findOne({ _id: req.body._id });
     if (user) {
       let lists = await user.product_lists;
@@ -30,7 +30,7 @@ router.get("/product", async (req, res) => {
     }
   });
 
-router.delete("/product", async (req, res) => {
+router.put("/product", async (req, res) => {
   const user = await User.findOne({ _id: req.body._id });
   if (user) {
     let lists = await user.product_lists;
@@ -82,6 +82,7 @@ router.post("/shop", async (req, res) => {
   // });
 
   router.post("/getShop", async (req, res) => {
+    console.log(req.body)
     const shops = await Shop.find({ 'ord': {$in: req.body.ord} });
     res.send(shops)
   
